@@ -2,7 +2,7 @@
 
 A Claude Code skill that guides researchers through writing Chinese national/provincial science foundation grant proposals (基金申报书) step by step — from blank page to submission-ready draft.
 
-Built from real experience: the skill encodes a complete methodology extracted from writing and iterating a Shenzhen Municipal Science and Technology Project proposal across 12 versions over 3 weeks.
+Built from real experience: the skill encodes a complete methodology extracted from iterating a real grant proposal across 12 versions over 3 weeks.
 
 ---
 
@@ -73,7 +73,7 @@ Restart Claude Code. The skill will appear as `/write-proposal`.
 
 **Start from scratch:**
 ```
-/write-proposal 粤港澳大湾区近岸海表流速场约15天集合预报
+/write-proposal 你的研究方向一句话描述
 ```
 
 **Continue from an existing draft:**
@@ -95,11 +95,9 @@ Claude will read the draft, identify which phase it's at, and list the top 3 iss
 grant-writing-agent/
 ├── README.md
 ├── skills/
-│   └── write-proposal.md       ← The skill file (install this)
-├── examples/
-│   └── 流场长时预测申报书迭代复盘.md  ← Real iteration log (12 versions, annotated)
+│   └── write-proposal.md    ← The skill file (install this)
 └── docs/
-    └── methodology.md          ← Full grant writing methodology reference
+    └── methodology.md       ← Full grant writing methodology reference
 ```
 
 ---
@@ -114,12 +112,6 @@ Reviewers are busy. A ✓/✗ checklist with one specific fix per ✗ is more ac
 
 **Why $ARGUMENTS supports both directions and file paths?**
 Most grant writing sessions aren't start-from-scratch. The skill detects which phase a draft is at and picks up from there, which matches how real revision cycles work.
-
----
-
-## Background
-
-The methodology in this skill was extracted from iterating a grant proposal for a Shenzhen Municipal Science and Technology Project on probabilistic ensemble forecasting of nearshore surface currents in the Pearl River Estuary (粤港澳大湾区公里级近岸海表流速场约15天集合预报). The iteration log with annotated version diffs is in `examples/`.
 
 ---
 
