@@ -9,16 +9,63 @@ Built from real experience iterating a grant proposal across 12 versions over 3 
 ## Skills
 
 ### `/write-proposal` — Draft the opening from scratch
-Start from a one-sentence research direction. The skill asks three targeted questions (research object, core contradiction, your angle), then drafts the opening section (立项依据) in the right register. Points you to the next skill to use.
+
+**When to use**: You have a research direction but no draft yet.
+
+Pass a one-sentence research direction. The skill asks three questions — research object, core contradiction, your angle — then generates a three-paragraph opening (立项依据) in grant proposal register. At the end it recommends which skill to use next.
+
+```
+/write-proposal 你的研究方向一句话描述
+```
+
+---
 
 ### `/proposal-logic` — Diagnose logical gaps
-Paste any section of a draft. The skill identifies which part of the proposal it is, maps the argument as a chain, and flags every jump where a connecting step is missing — with the exact quote, what's missing, and a one-line fix. Works on any section, no fixed structure assumed.
+
+**When to use**: You have a draft section that feels off but you can't pinpoint why.
+
+Paste draft text or pass a file path. The skill determines which part of the proposal it is, traces the argument as a logical chain, and flags every jump where a connecting step is missing — quoting the exact phrase, naming what's absent, and suggesting a one-line fix. Works on any section; no fixed structure is assumed.
+
+```
+/proposal-logic ./draft.docx
+/proposal-logic    ← then paste text directly
+```
+
+---
 
 ### `/proposal-reviewer` — Simulate three reviewer types
-Get independent feedback from three perspectives: a domain expert (technical feasibility, real novelty), an adjacent-field expert (clarity, logical flow, jargon), and a program officer (application value, measurable goals, presentation). Each gives a score and their top deduction. The output highlights "consensus weaknesses" — issues flagged by multiple reviewers — to prioritize fixes.
+
+**When to use**: The draft is mostly complete and you want to know where reviewers will push back.
+
+Paste draft text or pass a file path. Three reviewers evaluate it independently:
+- **同行专家** (domain expert): Is the method feasible? Is the novelty real?
+- **大同行专家** (adjacent-field expert): Is the problem explained clearly? Does the logic hold for a non-specialist?
+- **评审专家** (program officer): Is the application value concrete? Are goals measurable?
+
+Each reviewer outputs a score and their top deductions. The summary highlights **consensus weaknesses** — issues raised by multiple reviewers — so you know what to fix first.
+
+```
+/proposal-reviewer ./draft.docx
+/proposal-reviewer    ← then paste text directly
+```
+
+---
 
 ### `/proposal-refs` — Map references to claims
-Two modes: give it papers to learn what each one can and cannot support; or give it a draft to find which claims are unsupported and what to search for. Flags potential reference hallucinations.
+
+**When to use**: You have papers but aren't sure how to use them, or you have a draft and want to know which claims still need references.
+
+Two modes — the skill detects which one applies based on your input:
+
+- **Give references** → outputs what each paper can and cannot support, prevents misuse
+- **Give a draft** → scans every major claim, marks coverage status, suggests search keywords for unsupported claims
+
+Flags any reference it cannot verify with ⚠️ to prevent citation hallucination.
+
+```
+/proposal-refs ./papers.txt     ← list of titles/abstracts
+/proposal-refs ./draft.docx     ← draft to audit
+```
 
 ---
 
@@ -38,19 +85,29 @@ Restart Claude Code. All four skills will appear as slash commands.
 
 ---
 
-## Typical workflow
+## Typical workflows
 
+**Starting from scratch:**
 ```
-/write-proposal 你的研究方向
-      ↓
-/proposal-logic   ← check if the logic holds
-      ↓
-/proposal-reviewer ← stress-test against reviewer perspectives
-      ↓
-/proposal-refs    ← find or verify references for each claim
+/write-proposal      → get an opening draft
+/proposal-logic      → fix logical gaps
+/proposal-reviewer   → stress-test against reviewer perspectives
+/proposal-refs       → verify or find references for each claim
 ```
 
-Each skill works independently — use whichever fits where you are in the writing process.
+**Polishing an existing draft:**
+```
+/proposal-logic      → locate the breaks first
+/proposal-reviewer   → then check reviewer impact
+```
+
+**Working from a pile of papers:**
+```
+/proposal-refs       → understand what each paper can support
+/write-proposal      → then start writing with the right references in mind
+```
+
+Each skill works independently — start wherever you are in the process.
 
 ---
 
