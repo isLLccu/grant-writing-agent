@@ -1,91 +1,56 @@
 # Grant Writing Agent for Claude Code
 
-A Claude Code skill that guides researchers through writing Chinese national/provincial science foundation grant proposals (基金申报书) step by step — from blank page to submission-ready draft.
+Four Claude Code skills for writing and stress-testing Chinese science foundation grant proposals (基金申报书).
 
-Built from real experience: the skill encodes a complete methodology extracted from iterating a real grant proposal across 12 versions over 3 weeks.
-
----
-
-## What problem this solves
-
-Writing a Chinese grant proposal is hard in a specific way: reviewers expect a precise logical structure (problem chain, three-part research content, goals mapped 1-to-1 to scientific questions), but there's no widely-available tool that enforces this structure interactively.
-
-The typical failure modes:
-- Research content reads like a list of technical modules, not a problem chain
-- Existing methods are criticized before being acknowledged (breaks reviewer trust)
-- Formulas appear without setup sentences or symbol definitions
-- Technical jargon without full names on first use
-- Goals and scientific questions don't correspond to each other
-
-This skill catches all of the above — phase by phase, with explicit checklist output.
+Built from real experience iterating a grant proposal across 12 versions over 3 weeks.
 
 ---
 
-## How it works
+## Skills
 
-The skill runs as a **6-phase interactive workflow** inside Claude Code:
+### `/write-proposal` — Draft the opening from scratch
+Start from a one-sentence research direction. The skill asks three targeted questions (research object, core contradiction, your angle), then drafts the opening section (立项依据) in the right register. Points you to the next skill to use.
 
-```
-Phase 1 — 立项依据：三段式框架
-         Build the three-paragraph opening (background → existing method limitations → core contradiction)
+### `/proposal-logic` — Diagnose logical gaps
+Paste any section of a draft. The skill identifies which part of the proposal it is, maps the argument as a chain, and flags every jump where a connecting step is missing — with the exact quote, what's missing, and a one-line fix. Works on any section, no fixed structure assumed.
 
-Phase 2 — 文献支撑定位
-         Map each key claim to a specific reference. Flag potential hallucinations.
+### `/proposal-reviewer` — Simulate three reviewer types
+Get independent feedback from three perspectives: a domain expert (technical feasibility, real novelty), an adjacent-field expert (clarity, logical flow, jargon), and a program officer (application value, measurable goals, presentation). Each gives a score and their top deduction. The output highlights "consensus weaknesses" — issues flagged by multiple reviewers — to prioritize fixes.
 
-Phase 3 — 研究内容：三段递进
-         Write three research sections as a problem chain (not parallel modules).
-         Each section must explicitly build on the previous one.
-
-Phase 4 — 研究目标 + 关键科学问题
-         Derive goals (≤130 chars, declarative) and scientific questions (≤200 chars, interrogative).
-         Verified to map 1-to-1 with the three research sections.
-
-Phase 5 — 技术路线
-         Write the technical approach with problem-first structure per aspect.
-         Formula rules enforced: setup sentence → formula → symbol definitions → closing effect.
-
-Phase 6 — 整体逻辑自查
-         6-point checklist: main thread consistency, section linkage, formula completeness,
-         abbreviation coverage, and register compliance.
-```
-
-The agent stops at each phase boundary and waits for user approval before proceeding.
+### `/proposal-refs` — Map references to claims
+Two modes: give it papers to learn what each one can and cannot support; or give it a draft to find which claims are unsupported and what to search for. Flags potential reference hallucinations.
 
 ---
 
 ## Installation
 
-Copy the skill file to your Claude Code commands directory:
+Copy the skill files to your Claude Code commands directory:
 
 ```bash
 # macOS / Linux
-cp skills/write-proposal.md ~/.claude/commands/write-proposal.md
+cp skills/*.md ~/.claude/commands/
 
 # Windows (PowerShell)
-Copy-Item skills\write-proposal.md $env:USERPROFILE\.claude\commands\write-proposal.md
+Copy-Item skills\*.md $env:USERPROFILE\.claude\commands\
 ```
 
-Restart Claude Code. The skill will appear as `/write-proposal`.
+Restart Claude Code. All four skills will appear as slash commands.
 
 ---
 
-## Usage
+## Typical workflow
 
-**Start from scratch:**
 ```
-/write-proposal 你的研究方向一句话描述
+/write-proposal 你的研究方向
+      ↓
+/proposal-logic   ← check if the logic holds
+      ↓
+/proposal-reviewer ← stress-test against reviewer perspectives
+      ↓
+/proposal-refs    ← find or verify references for each claim
 ```
 
-**Continue from an existing draft:**
-```
-/write-proposal ./my-draft.docx
-```
-Claude will read the draft, identify which phase it's at, and list the top 3 issues before suggesting any rewrites.
-
-**Work on a specific section:**
-```
-/write-proposal 帮我检查研究内容三部分的衔接逻辑
-```
+Each skill works independently — use whichever fits where you are in the writing process.
 
 ---
 
@@ -95,23 +60,26 @@ Claude will read the draft, identify which phase it's at, and list the top 3 iss
 grant-writing-agent/
 ├── README.md
 ├── skills/
-│   └── write-proposal.md    ← The skill file (install this)
+│   ├── write-proposal.md      ← draft opening from scratch
+│   ├── proposal-logic.md      ← logical gap diagnosis
+│   ├── proposal-reviewer.md   ← three-reviewer simulation
+│   └── proposal-refs.md       ← reference-to-claim mapping
 └── docs/
-    └── methodology.md       ← Full grant writing methodology reference
+    └── methodology.md         ← grant writing methodology reference
 ```
 
 ---
 
 ## Design notes
 
-**Why phase-based?**
-Grant proposals fail at the logic level, not the sentence level. Splitting the work into 6 phases forces the user to validate the logical structure (problem chain, goal mapping) before polishing language — the opposite of what most LLM writing assistants do.
+**Why four separate skills instead of one?**
+Each skill targets a different failure mode at a different stage. A single monolithic skill would force the wrong tool on the right problem. Keeping them separate also means each can be used independently — you don't have to start from scratch to use `/proposal-reviewer` on an existing draft.
 
-**Why explicit checklist output in Phase 6?**
-Reviewers are busy. A ✓/✗ checklist with one specific fix per ✗ is more actionable than a paragraph of suggestions. It also makes it easy to re-run the check after edits.
+**Why does `/proposal-logic` not enforce a fixed structure?**
+Most existing tools check against a template. The real problem is logical breaks within whatever structure the author chose. Detecting jumps in the author's own argument is harder and more useful.
 
-**Why $ARGUMENTS supports both directions and file paths?**
-Most grant writing sessions aren't start-from-scratch. The skill detects which phase a draft is at and picks up from there, which matches how real revision cycles work.
+**Why does `/proposal-refs` flag hallucinations explicitly?**
+LLMs confidently produce plausible-sounding fake citations. The skill treats any reference it cannot verify as medium-risk and surfaces it, rather than silently including it.
 
 ---
 
